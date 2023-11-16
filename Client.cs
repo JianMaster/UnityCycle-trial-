@@ -1,21 +1,17 @@
 using System;
+using System.Collections.Generic;
 
 namespace Client
 {
     public class Client
     {
-        static event Action startAction;
-        public static Action StartEvnet { get => startAction; set => startAction = value; }
-        static event Action fixedUpdateAction;
-        public static Action FixedUpdateEvent { get => fixedUpdateAction; set => fixedUpdateAction = value; }
-        static event Action updateAction;
-        public static Action UpdateEvent{ get => updateAction; set => updateAction = value; }
-
         Timer timer;
 
         float frameTime;
         float fixedUpdateExcuteTime;
         float maximumFixedUpdateTimes;
+        List<GameObject> objList;
+        Dictionary<GameObject, int> objDic;
         public Client(int frame)
         {
             frameTime = 1f / frame;
@@ -30,39 +26,47 @@ namespace Client
             while (true)
             {
                 Start();
-                FixedUpdate(Timer.DeltaTime);
-                Update(Timer.DeltaTime);
-                Console.WriteLine("当前CurFrameTime："+ timer.CurFrameTime);
+                Update(timer.DeltaTime);
+                FixedUpdate(timer.DeltaTime);
+                Console.WriteLine("当前CurFrameTime：" + timer.CurFrameTime);
                 while (timer.CurFrameTime < frameTime) { }
                 timer.Record();
-                Console.WriteLine("当前deltatime："+ Timer.DeltaTime);
+                Console.WriteLine("当前deltatime：" + timer.DeltaTime);
             }
         }
 
         void Start()
         {
-            StartEvnet?.Invoke();
-            startAction = null;
+            foreach (var obj in objList)
+            {
+                obj.Start();
+            }
         }
 
         void FixedUpdate(float dt)
         {
-            fixedUpdateExcuteTime += dt;
+            fixedUpdateExcuteTime = dt;
             if (fixedUpdateExcuteTime > GlobalConfig.MAXIMUM_ALLOWED_TIMESTEP)
             {
                 float newFDT = fixedUpdateExcuteTime / maximumFixedUpdateTimes;
                 timer.SetFixedDeltaTime(newFDT);
             }
-            for (; fixedUpdateExcuteTime > Timer.FixedDeltaTime; fixedUpdateExcuteTime -= Timer.FixedDeltaTime)
+            for (; fixedUpdateExcuteTime > timer.FixedDeltaTime; fixedUpdateExcuteTime -= timer.FixedDeltaTime)
             {
-                FixedUpdateEvent?.Invoke();
+                foreach (var obj in objList)
+                {
+                    obj.FixedUpdate(fixedUpdateExcuteTime);
+                }
             }
             timer.SetFixedDeltaTime(GlobalConfig.FIXED_DELTA_TIME);
         }
 
         void Update(float dt)
         {
-            UpdateEvent?.Invoke();
+            foreach (var obj in objList)
+            {
+                obj.Update(dt);
+            }
         }
 
     }

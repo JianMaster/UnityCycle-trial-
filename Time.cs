@@ -9,13 +9,12 @@ namespace Client
         Stopwatch stopwatch;
         TimeSpan lastTs;
         float deltaTime;
+        public float DeltaTime => deltaTime;
         float fixedDeltaTime;
+        public float FixedDeltaTime => fixedDeltaTime;
         public void SetFixedDeltaTime(float dt) { fixedDeltaTime = dt; }
 
-        static Timer _time;
-        public static float DeltaTime => _time.deltaTime;
-        public static float FixedDeltaTime => _time.fixedDeltaTime;
-        public static float Time => (float)_time.stopwatch.Elapsed.TotalSeconds;
+        public float Time => (float)stopwatch.Elapsed.TotalSeconds;
 
         public Timer()
         {
@@ -25,20 +24,14 @@ namespace Client
 
         public void Start()
         {
-            if (_time != null)
-            {
-                return;
-            }
             stopwatch.Start();
             lastTs = new TimeSpan();
-            _time = this;
         }
 
         public void Stop()
         {
             stopwatch.Stop();
             stopwatch.Reset();
-            _time = null;
         }
 
         public void Record()

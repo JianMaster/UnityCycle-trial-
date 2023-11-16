@@ -6,25 +6,25 @@ namespace Client.Scripts
         int fixedUpdateTimes = 0;
         int updateTimes = 0;
 
-        void Awake()
+        public override void Awake()
         {
             Console.WriteLine("Awake Function Call");
         }
-        void Start()
+        public override void Start()
         {
             Console.WriteLine("Start Function Call");
         }
-        void FixedUpdate()
+        public override void FixedUpdate(float dt)
         {
             fixedUpdateTimes++;
             Console.WriteLine("FixedUpdate Function Call:" + fixedUpdateTimes);
         }
-        void Update()
+        public override void Update(float dt)
         {
             updateTimes++;
             Console.WriteLine("Update Function Call:" + updateTimes);
             if(updateTimes == 100) {
-                gameObject.RemoveComponent<GameMain>();
+                // gameObject.RemoveComponent<GameMain>();
             }
         }
     }
